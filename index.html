@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5F0E6">
+<title>ARTPASS — La noche estrellada</title>
+<link rel="icon" href="img/icono.png">
+<link rel="apple-touch-icon" href="img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  /* ===== PALETA ARTPASS (marfil, esmeralda y dorado) ===== */
+  :root{
+    --papel:#F5F0E6;      /* fondo principal (marfil) */
+    --salvia:#EAE2D2;     /* paneles, tarjetas */
+    --arena:#D3C8B4;      /* líneas y bordes */
+    --piedra:#776F62;     /* texto secundario */
+    --negro:#152523;      /* texto */
+    --verde:#0E3433;      /* esmeralda: botones, barras */
+    --verde-2:#174744;
+    --dorado:#C29A5B;     /* acentos */
+    --dorado-osc:#7E5C2A; /* etiquetas chicas (más contraste) */
+    --oro-claro:#EFD3A0;
+    --marfil:#FBF7EF;
+    --rojo:#8A3A26;
+    --serif:"Playfair Display",Georgia,serif;
+    --sans:"DM Sans",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--papel);color:var(--negro);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+  button{font:inherit;color:inherit;cursor:pointer}
+  img{display:block}
+  h1,h2,h3,p{margin:0}
+
+  .app{width:min(100%,430px);min-height:100vh;margin:auto;background:var(--papel);position:relative;overflow-x:hidden}
+  .screen{min-height:100vh;padding:calc(14px + env(safe-area-inset-top)) 22px 120px;animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ===== BARRA SUPERIOR ===== */
+  .topbar{height:52px;display:grid;grid-template-columns:76px 1fr 76px;align-items:center;border-bottom:1px solid var(--arena);margin-bottom:26px}
+  .brand{border:0;background:none;padding:0;justify-self:center}
+  .brand img{height:21px;width:auto}
+  .back-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--arena);background:none;color:var(--negro);display:grid;place-items:center;padding:0}
+
+  /* ===== TIPOGRAFÍA ===== */
+  .eyebrow{color:var(--dorado-osc);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+  h1{font-family:var(--serif);font-weight:500;font-size:36px;line-height:1.05;letter-spacing:-.02em}
+  h2{font-family:var(--serif);font-weight:500;font-size:28px;line-height:1.1;letter-spacing:-.01em}
+  .muted{color:var(--piedra)}
+  .center{text-align:center}
+  .count{font-size:12px;color:var(--piedra)}
+  .link-arrow{border:0;background:none;padding:6px 0;color:var(--dorado-osc);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+
+  /* ===== BOTONES ===== */
+  .primary,.secondary{width:100%;border-radius:999px;padding:15px 16px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px}
+  .primary{border:1px solid var(--verde);background:var(--verde);color:var(--marfil);margin-top:22px}
+  .secondary{border:1px solid var(--arena);background:transparent;margin-top:10px}
+
+  /* ===== ÍCONOS ===== */
+  .i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;display:block}
+  .arrow{width:36px;height:36px;border-radius:50%;border:1px solid var(--dorado);color:var(--dorado-osc);display:grid;place-items:center}
+  .arrow .i,.link-arrow .i{width:18px;height:18px;stroke-width:1.9}
+  :focus-visible{outline:2px solid var(--verde);outline-offset:2px}
+
+  /* ===== GALERÍA (inicio) ===== */
+  .heading{text-align:center;margin:8px 0 18px}
+  .gallery-wrap{position:relative}
+  .gallery{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -22px;padding:10px calc(50% - 82px) 8px;scrollbar-width:none;align-items:flex-start}
+  .gallery::-webkit-scrollbar{display:none}
+  .painting{flex:0 0 164px;scroll-snap-align:center;text-align:center;border:0;background:none;padding:0;transition:transform .25s ease,opacity .25s ease;transform:scale(.78);opacity:.5;transform-origin:top center}
+  .painting.is-center{transform:scale(1);opacity:1}
+  .painting .art{height:210px;background:var(--salvia);overflow:hidden;box-shadow:0 0 0 6px var(--marfil),0 0 0 7px var(--arena),0 14px 24px -12px rgba(21,37,35,.45);margin:8px}
+  .painting .art img{width:100%;height:100%;object-fit:cover}
+  .painting .cap{margin-top:16px;font-family:var(--serif);font-size:17px;line-height:1.2}
+  .painting .yr{margin-top:4px;font-size:12px;color:var(--dorado-osc)}
+  .painting .mu{margin-top:2px;font-size:12px;color:var(--piedra)}
+  .g-nav{position:absolute;top:96px;z-index:2;width:42px;height:42px;border-radius:50%;background:rgba(245,240,230,.95);border:1px solid var(--arena);color:var(--negro);display:grid;place-items:center;padding:0;box-shadow:0 2px 8px rgba(21,37,35,.12);transition:opacity .2s}
+  .g-nav .i{width:20px;height:20px;stroke-width:1.9}
+  .g-nav.prev{left:-8px}.g-nav.next{right:-8px}
+  .g-nav:disabled{opacity:0;pointer-events:none}
+  .gallery,.carousel{cursor:grab;user-select:none;-webkit-user-select:none}
+  .gallery.dragging,.carousel.dragging{cursor:grabbing}
+  .gallery img,.carousel img{-webkit-user-drag:none;pointer-events:none}
+  .timeline{position:relative;margin:18px 30px 6px;height:30px;font-size:12px;color:var(--piedra)}
+  .timeline .line{position:absolute;left:0;right:0;top:9px;height:1px;background:var(--arena)}
+  .timeline .mark{position:absolute;top:8px;width:36px;height:3px;background:var(--verde);transform:translateX(-50%);transition:left .2s ease}
+  .timeline .ends{position:absolute;left:0;right:0;top:16px;display:flex;justify-content:space-between}
+
+  /* Tarjeta "en el museo" */
+  .nfc-card{margin-top:26px;background:var(--verde);color:var(--marfil);border-radius:18px;padding:18px;display:flex;gap:14px;align-items:center;position:relative;overflow:hidden}
+  .nfc-card::after{content:"";position:absolute;right:-30px;bottom:-40px;width:130px;height:130px;background:url(img/marca.png) center/contain no-repeat;opacity:.07}
+  .nfc-card .eyebrow{color:var(--oro-claro)}
+  .nfc-icon{flex:0 0 48px;height:48px;border-radius:50%;border:1px solid var(--dorado);display:grid;place-items:center;color:var(--oro-claro);position:relative}
+  .nfc-icon::before{content:"";position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--dorado);animation:onda 2.4s ease-out infinite}
+  .nfc-card p{font-size:13px;line-height:1.45;margin-top:4px;opacity:.9}
+  .nfc-card button{margin-top:10px;border:1px solid var(--dorado);background:none;border-radius:999px;padding:9px 14px;color:var(--oro-claro);font-weight:500;font-size:13px;position:relative;z-index:1}
+
+  /* ===== LISTAS ===== */
+  .list{margin-top:10px}
+  .row{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;padding:12px 0;border:0;border-bottom:1px solid var(--arena);background:none;width:100%;text-align:left}
+  .thumb{height:64px;background:var(--salvia);overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .row .name{font-family:var(--serif);font-size:17px;line-height:1.2}
+  .row .info{font-size:12px;color:var(--piedra);margin-top:4px;line-height:1.45}
+
+  /* ===== FICHA DE OBRA ===== */
+  .scan-banner{display:flex;align-items:center;gap:10px;background:var(--verde);color:var(--marfil);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.4;margin-bottom:20px}
+  .scan-banner b{font-weight:600}
+  .scan-banner .i{width:24px;height:24px;stroke-width:2.2;color:var(--oro-claro);flex:none}
+  .banner-btn{margin-left:auto;flex:0 0 auto;border:1px solid rgba(251,247,239,.5);background:none;color:var(--marfil);border-radius:999px;padding:9px 14px;font-size:12px;font-weight:500}
+  .intro{text-align:center;margin:4px 0 24px}
+  .intro h1{margin-top:8px}
+  .intro .sub{margin-top:8px;color:var(--dorado-osc);font-size:13px}
+  .scan-card{border:1px solid var(--arena);border-radius:18px;padding:14px;background:var(--salvia)}
+  .scan-image{height:340px;border-radius:10px;overflow:hidden;background:#221D18;display:grid;place-items:center}
+  .scan-image img{max-width:100%;max-height:100%;object-fit:contain}
+  .saved-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:12px 16px;border:1px solid var(--verde);border-radius:999px}
+  .saved-chip{display:inline-flex;align-items:center;gap:8px;color:var(--verde);font-weight:500;font-size:13.5px}
+  .saved-chip .i{width:20px;height:20px;stroke-width:2.2}
+  .text-btn{border:0;background:none;padding:6px 2px;color:var(--rojo);font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+  .resumen{font-size:14.5px;line-height:1.6;color:#3a3a33;margin-top:16px}
+  details.more{margin-top:14px;border-top:1px solid var(--arena);padding-top:10px}
+  details.more summary{cursor:pointer;list-style:none;font-size:14px;color:var(--dorado-osc);font-weight:600;padding:10px 0;display:flex;justify-content:space-between;align-items:center}
+  details.more summary::-webkit-details-marker{display:none}
+  details.more summary .i{width:18px;height:18px;transition:transform .25s}
+  details.more[open] summary .i{transform:rotate(90deg)}
+  details.more[open] summary{margin-bottom:10px}
+  .details{display:grid;grid-template-columns:1fr 1fr;gap:16px;background:var(--marfil);border:1px solid var(--arena);border-radius:12px;padding:16px}
+  .details .full{grid-column:1/-1}
+  .label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--dorado-osc)}
+  .value{font-size:14px;margin-top:5px;line-height:1.4}
+  .bloque{margin-top:22px}
+  .bloque h3{font-family:var(--serif);font-weight:500;font-size:20px;margin-bottom:6px}
+  .bloque p{font-size:14px;line-height:1.65;color:#3a3a33}
+  .curioso{margin-top:24px;background:var(--verde);color:var(--marfil);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+  .curioso .label{color:var(--oro-claro)}
+  .curioso p{font-size:14px;line-height:1.6;margin-top:8px;opacity:.94}
+  .curioso::after{content:"";position:absolute;right:-14px;bottom:-16px;width:86px;height:86px;background:url(img/marca.png) center/contain no-repeat;opacity:.1}
+  .note{text-align:center;color:var(--piedra);font-size:12px;margin-top:20px;line-height:1.6}
+
+  /* ===== PASAPORTE: carrusel de estampillas ===== */
+  .screen-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+  .screen-head h2{margin-top:6px}
+  .carousel{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -22px;padding:4px 22px 14px;scrollbar-width:none}
+  .carousel::-webkit-scrollbar{display:none}
+  /* Estampilla con borde perforado */
+  .estampilla{--r:5px;background:var(--marfil);padding:calc(2.2*var(--r));position:relative;border:0;text-align:left;
+    -webkit-mask:radial-gradient(var(--r),#0000 98%,#000) round calc(-1.5*var(--r)) calc(-1.5*var(--r))/calc(3*var(--r)) calc(3*var(--r)),linear-gradient(#000 0 0) no-repeat 50%/calc(100% - 3*var(--r)) calc(100% - 3*var(--r));
+            mask:radial-gradient(var(--r),#0000 98%,#000) round calc(-1.5*var(--r)) calc(-1.5*var(--r))/calc(3*var(--r)) calc(3*var(--r)),linear-gradient(#000 0 0) no-repeat 50%/calc(100% - 3*var(--r)) calc(100% - 3*var(--r))}
+  .sombra{filter:drop-shadow(0 8px 12px rgba(21,37,35,.16))}
+  .estampilla .marco{border:1px solid rgba(126,92,42,.35);padding:8px}
+  .estampilla .art{height:240px;overflow:hidden;background:#221D18}
+  .estampilla .art img{width:100%;height:100%;object-fit:cover}
+  .estampilla .name{font-family:var(--serif);font-size:19px;margin-top:12px;line-height:1.15}
+  .estampilla .small{font-size:12px;color:var(--piedra);margin-top:4px}
+  .estampilla .foot{display:flex;justify-content:space-between;margin-top:12px;border-top:1px solid var(--arena);padding-top:9px;font-size:11px;letter-spacing:.06em;color:var(--piedra);text-transform:uppercase}
+  .estampilla .sello{position:absolute;right:6px;top:170px;width:84px;height:84px;transform:rotate(-14deg);opacity:.85;pointer-events:none}
+  .c-wrap{flex:0 0 76%;scroll-snap-align:start;border:0;background:none;padding:0}
+  .c-wrap.nueva{animation:llega 1.3s cubic-bezier(.2,.9,.25,1) both}
+  .c-wrap.nueva .sombra{animation:brillo 2.4s ease-out .4s both}
+  @keyframes llega{0%{transform:scale(.7) rotate(-6deg);opacity:0}60%{transform:scale(1.04) rotate(1deg);opacity:1}100%{transform:none}}
+  @keyframes brillo{0%{filter:drop-shadow(0 8px 12px rgba(21,37,35,.16))}30%{filter:drop-shadow(0 0 20px rgba(194,154,91,.95))}100%{filter:drop-shadow(0 8px 12px rgba(21,37,35,.16))}}
+  .etq-nueva{position:absolute;left:18px;top:18px;z-index:2;background:var(--dorado);color:var(--verde);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
+  .c-wrap{position:relative}
+  .bloqueada{flex:0 0 76%;scroll-snap-align:start;border:1.5px dashed var(--arena);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;min-height:360px;color:var(--piedra)}
+  .bloqueada img{width:42px;opacity:.3}
+  .bloqueada b{font-family:var(--serif);font-weight:500;font-size:20px;color:var(--negro);margin-top:14px}
+  .bloqueada span{font-size:12.5px;line-height:1.5;margin-top:6px}
+  .dots{display:flex;justify-content:center;gap:8px;margin:12px 0 22px}
+  .dots i{width:6px;height:6px;border-radius:50%;background:var(--arena);transition:.25s}
+  .dots i.on{background:var(--verde);width:18px;border-radius:3px}
+  .progreso{display:flex;align-items:center;gap:14px;background:var(--salvia);border:1px solid var(--arena);border-radius:14px;padding:14px 16px;margin-bottom:28px}
+  .progreso .barra{flex:1;height:6px;background:var(--arena);border-radius:3px;overflow:hidden}
+  .progreso .barra i{display:block;height:100%;background:linear-gradient(90deg,var(--verde),var(--dorado));border-radius:3px}
+  .progreso b{font-family:var(--serif);font-weight:600;font-size:18px}
+
+  /* ===== VISITA ===== */
+  .visit-title{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+  .visit-title h2{margin-top:6px}
+  .stamp{text-align:right;color:var(--dorado-osc);font-size:12px;line-height:1.5;letter-spacing:.06em;white-space:nowrap}
+
+  /* ===== PERFIL ===== */
+  .pasaporte-id{margin-top:6px;background:var(--verde);color:var(--marfil);border-radius:18px;padding:20px;position:relative;overflow:hidden}
+  .pasaporte-id::after{content:"";position:absolute;right:-24px;top:-20px;width:150px;height:150px;background:url(img/marca.png) center/contain no-repeat;opacity:.08}
+  .pasaporte-id img{height:18px;width:auto}
+  .pasaporte-id h2{margin-top:18px;color:var(--marfil)}
+  .pasaporte-id .datos{display:flex;gap:26px;margin-top:14px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--oro-claro)}
+  .pasaporte-id .datos b{display:block;font-family:var(--sans);font-size:13px;letter-spacing:.04em;color:var(--marfil);font-weight:500;margin-top:3px;text-transform:none}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--arena);border-bottom:1px solid var(--arena);margin-top:22px}
+  .stats div{padding:16px 0;text-align:center}
+  .stats div+div{border-left:1px solid var(--arena)}
+  .stats b{display:block;font-family:var(--serif);font-weight:500;font-size:28px}
+  .stats span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--piedra)}
+  .setting{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--arena);font-size:14px}
+  .switch{flex:none;width:44px;height:26px;border-radius:13px;border:0;background:var(--arena);position:relative;padding:0}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+  .switch.on{background:var(--verde)}
+  .switch.on::after{left:21px}
+
+  /* ===== ESCANEAR ===== */
+  .pulse{width:170px;height:170px;margin:40px auto 30px;border-radius:50%;border:1px solid var(--verde);display:grid;place-items:center;position:relative}
+  .pulse::before,.pulse::after{content:"";position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--verde);animation:onda 2.2s ease-out infinite}
+  .pulse::after{animation-delay:1.1s}
+  .pulse .i{width:64px;height:64px;color:var(--verde);stroke-width:1.4}
+  @keyframes onda{from{transform:scale(1);opacity:.7}to{transform:scale(1.6);opacity:0}}
+  .steps{margin-top:26px;border-top:1px solid var(--arena)}
+  .step{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--arena);font-size:14px;line-height:1.45}
+  .step b{font-family:var(--serif);font-weight:500;color:var(--dorado-osc);min-width:22px}
+
+  /* ===== BARRA INFERIOR ===== */
+  .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,430px);z-index:10;background:rgba(245,240,230,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--arena);padding:8px 4px calc(10px + env(safe-area-inset-bottom))}
+  .tabs-wrap{position:relative}
+  .tabs{display:grid;grid-template-columns:repeat(5,1fr)}
+  .tab-ind{position:absolute;top:-9px;width:30px;height:3px;border-radius:0 0 3px 3px;background:var(--verde);transform:translateX(-50%);transition:left .38s cubic-bezier(.5,1.6,.4,1),opacity .2s}
+  .tab{border:0;background:none;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--piedra);position:relative}
+  .tab .ic{height:26px;display:grid;place-items:center;transition:transform .2s}
+  .tab .ic .i{width:24px;height:24px}
+  .tab.current{color:var(--verde);font-weight:600}
+  .tab.pop .ic{animation:pop .4s cubic-bezier(.5,1.8,.4,1)}
+  @keyframes pop{0%{transform:scale(.7) translateY(3px)}100%{transform:none}}
+  .tab.scan .ic{width:54px;height:54px;margin-top:-28px;border-radius:50%;background:var(--verde);color:var(--oro-claro);box-shadow:0 0 0 4px var(--papel),0 4px 14px rgba(14,52,51,.35)}
+  .tab.scan.current .ic{box-shadow:0 0 0 4px var(--papel),0 0 0 5.5px var(--dorado),0 4px 14px rgba(14,52,51,.35)}
+  .badge{position:absolute;top:0;left:calc(50% + 6px);background:var(--dorado);color:var(--verde);font-size:10px;font-weight:600;min-width:17px;height:17px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+
+  /* ===== AVISO FLOTANTE ===== */
+  .toast{position:fixed;left:50%;bottom:100px;transform:translate(-50%,30px);opacity:0;background:var(--verde);color:var(--marfil);padding:12px 18px;border-radius:999px;font-size:13px;transition:all .3s ease;z-index:60;white-space:nowrap}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ===== ESCANEO NFC: fase 1 sola al abrir; fase 2 al tocar "Agregar" ===== */
+  .escaneo{position:fixed;inset:0;z-index:50;background:radial-gradient(90% 70% at 50% 42%, #174744 0%, #0B2627 55%, #04100F 100%);color:var(--marfil);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow:hidden}
+  .escaneo[hidden]{display:none}
+  .escaneo .rayos,.escaneo .ondas,.escaneo .detectada,.escaneo .chispas,.escaneo .destello{pointer-events:none}
+  .esc-logo{pointer-events:none}
+  .esc-cerrar{z-index:5}
+  .esc-logo{position:absolute;top:calc(18px + env(safe-area-inset-top));left:0;right:0;display:flex;justify-content:center}
+  .esc-logo img{height:20px;width:auto;opacity:.95}
+  .esc-cerrar{position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px;width:40px;height:40px;border-radius:50%;border:0;background:none;color:var(--oro-claro);opacity:.7;display:grid;place-items:center}
+  .ondas{position:absolute;left:50%;top:40%;width:120px;height:120px;margin:-60px 0 0 -60px}
+  .ondas i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--dorado);opacity:0;animation:onda2 1.4s ease-out infinite}
+  .ondas i:nth-child(2){animation-delay:.45s}.ondas i:nth-child(3){animation-delay:.9s}
+  @keyframes onda2{0%{transform:scale(1);opacity:.8}100%{transform:scale(2);opacity:0}}
+  .ondas b{position:absolute;inset:32px;border-radius:50%;background:var(--dorado);color:var(--verde);display:grid;place-items:center;box-shadow:0 0 30px rgba(194,154,91,.55)}
+  .ondas b .i{width:28px;height:28px;stroke-width:2}
+  .detectada{position:absolute;top:calc(40% + 92px);left:0;right:0;text-align:center}
+  .detectada .eyebrow{color:var(--oro-claro);letter-spacing:.3em}
+  .detectada p{font-size:13px;opacity:.7;margin-top:8px}
+  .fase1 .ondas,.fase1 .detectada{animation:fuera .4s ease forwards 1.5s}
+  @keyframes fuera{to{opacity:0;visibility:hidden}}
+  .escena{position:relative;width:min(64vw,270px);opacity:0}
+  .fase1 .escena{animation:aparece .8s cubic-bezier(.2,.9,.25,1) forwards 1.6s}
+  @keyframes aparece{from{opacity:0;transform:translateY(30px) scale(.82)}to{opacity:1;transform:none}}
+  .escena .estampilla{--r:7px;background:transparent;color:var(--negro)}
+  .escena .estampilla .art{height:auto;aspect-ratio:4/4.6}
+  .escena .marco{border-color:transparent}
+  .escena .texto{opacity:0}
+  .escena .sombraEsc{filter:drop-shadow(0 20px 30px rgba(0,0,0,.55))}
+  .fase1 .escena .estampilla{animation:papel .8s ease forwards 2.05s}
+  @keyframes papel{to{background:var(--marfil)}}
+  .fase1 .escena .marco{animation:marco .6s ease forwards 2.45s}
+  @keyframes marco{to{border-color:rgba(126,92,42,.35)}}
+  .fase1 .escena .texto{animation:sube .5s ease forwards 2.55s}
+  .fase1:not(.fase2) .escena .sombraEsc{animation:late 2.4s ease-in-out infinite 3.4s}
+  @keyframes late{0%,100%{filter:drop-shadow(0 20px 30px rgba(0,0,0,.55))}50%{filter:drop-shadow(0 20px 30px rgba(0,0,0,.55)) drop-shadow(0 0 22px rgba(194,154,91,.6))}}
+  .trazo{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);pointer-events:none;overflow:visible}
+  .trazo rect{fill:none;stroke:var(--oro-claro);stroke-width:2.5;stroke-dasharray:var(--p);stroke-dashoffset:var(--p);filter:drop-shadow(0 0 6px rgba(255,220,160,.9))}
+  .fase1 .trazo rect{animation:traza 1s ease-in-out forwards 2s}
+  .fase2 .trazo rect{stroke-dashoffset:0;animation:apaga .5s ease forwards}
+  @keyframes traza{to{stroke-dashoffset:0}}
+  @keyframes apaga{to{opacity:0}}
+  .escena .sello{position:absolute;right:-28px;top:40%;width:116px;height:116px;opacity:0;transform:scale(2.2) rotate(-30deg);z-index:3}
+  .fase2 .escena .sello{animation:golpe .3s cubic-bezier(.5,0,.75,0) forwards .05s}
+  @keyframes golpe{0%{opacity:0;transform:scale(2.2) rotate(-30deg)}100%{opacity:.95;transform:scale(1) rotate(-14deg)}}
+  .fase2 .escena{animation:sacude .45s ease .33s;opacity:1}
+  @keyframes sacude{0%,100%{transform:none}30%{transform:scale(1.05)}60%{transform:scale(.99)}}
+  .rayos{position:absolute;left:50%;top:40%;width:900px;height:900px;margin:-450px 0 0 -450px;opacity:0;background:repeating-conic-gradient(from 0deg, rgba(239,211,160,.13) 0 6deg, transparent 6deg 15deg);-webkit-mask:radial-gradient(closest-side,#000 10%,transparent 75%);mask:radial-gradient(closest-side,#000 10%,transparent 75%)}
+  .fase2 .rayos{animation:aparecer 1.2s ease forwards .33s, gira 30s linear infinite .33s}
+  @keyframes aparecer{to{opacity:1}}
+  @keyframes gira{to{rotate:360deg}}
+  .destello{position:absolute;inset:0;background:radial-gradient(circle at 50% 40%, rgba(255,240,210,.95), rgba(255,240,210,0) 60%);opacity:0;pointer-events:none}
+  .fase2 .destello{animation:destello .9s ease-out forwards .33s}
+  @keyframes destello{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+  .chispas{position:absolute;left:50%;top:40%;width:0;height:0}
+  .chispas i{position:absolute;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--oro-claro);opacity:0;box-shadow:0 0 8px rgba(255,220,160,.9)}
+  .fase2 .chispas i{animation:chispa 1.3s cubic-bezier(.1,.7,.3,1) forwards .35s}
+  @keyframes chispa{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.3)}}
+  .textos{position:relative;text-align:center;margin-top:28px;min-height:100px;width:100%}
+  .texto1,.texto2{position:absolute;left:0;right:0;top:0;opacity:0}
+  .fase1 .texto1{animation:sube .6s ease forwards 2.8s}
+  .fase2 .texto1{animation:none;opacity:0}
+  .fase2 .texto2{animation:sube .6s ease forwards .6s}
+  @keyframes sube{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .textos .eyebrow{color:var(--oro-claro);letter-spacing:.28em}
+  .textos h2{font-size:32px;font-weight:600;margin-top:8px;color:var(--marfil)}
+  .texto2 h2{font-size:28px}
+  .textos p{font-size:14px;opacity:.82;margin-top:8px}
+  .acciones{position:relative;width:min(100%,340px);margin-top:20px;min-height:122px}
+  .acciones1,.acciones2{position:absolute;left:0;right:0;top:0;opacity:0;pointer-events:none}
+  .fase1 .acciones1{animation:sube .5s ease forwards 3.1s;pointer-events:auto}
+  .fase2 .acciones1{animation:none;opacity:0;pointer-events:none}
+  .fase2 .acciones2{animation:sube .5s ease forwards 1s;pointer-events:auto}
+  .btn-oro{width:100%;border:0;border-radius:999px;padding:16px;background:var(--dorado);color:var(--verde);font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-linea{width:100%;border:1px solid rgba(239,211,160,.45);border-radius:999px;padding:15px;background:none;color:var(--marfil);font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:10px}
+  .btn-oro .i{width:18px;height:18px;stroke-width:2.4}
+  .fase1:not(.fase2) .agregar{animation:pulso 1.8s ease-in-out infinite 3.6s}
+  @keyframes pulso{0%,100%{box-shadow:0 0 0 0 rgba(194,154,91,.6)}60%{box-shadow:0 0 0 14px rgba(194,154,91,0)}}
+  .nota{font-size:12px;opacity:.6;text-align:center;margin-top:12px}
+
+  /* En computador se ve como un teléfono al centro */
+  @media(min-width:700px){
+    body{padding:28px;background:#E9E3D6}
+    .app{border-radius:22px;box-shadow:0 0 0 1px var(--arena),0 20px 50px rgba(21,37,35,.08);min-height:calc(100vh - 56px)}
+  }
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-delay:0s!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<!-- BARRA INFERIOR -->
+<nav class="tabbar" id="tabbar"><div class="tabs-wrap"><span class="tab-ind" id="tabInd"></span><div class="tabs" id="tabs"></div></div></nav>
+
+<!-- ESCANEO NFC (se muestra al abrir la página desde el tag) -->
+<div class="escaneo" id="escaneo" hidden></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   ARTPASS — prototipo · página del NFC de LA NOCHE ESTRELLADA
+   Al abrir el link (lo que pasa al tocar el NFC) se reproduce el
+   escaneo de la obra y aparece "Agregar a mi pasaporte".
+   La colección se guarda en el navegador del celular.
+   ========================================================= */
+const OBRA_DE_ESTA_PAGINA = "noche";
+// Obras que no se pueden sellar desde esta página (tendrán su propia página/NFC)
+const BLOQUEADAS_AQUI = [];
+
+/* ===== ÍCONOS ===== */
+const svg = d => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+const ICON = {
+  galeria: svg('<rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="6.5" y="7.5" width="11" height="9"/><path d="M6.5 15l3.2-3.2 2.6 2.6 1.8-1.8 3.4 3.4"/><circle cx="14.6" cy="10.2" r=".9"/>'),
+  escanear: svg('<path d="M7.5 9a4.5 4.5 0 0 1 0 6"/><path d="M11 6.5a8 8 0 0 1 0 11"/><path d="M14.5 4a11.5 11.5 0 0 1 0 16"/><circle cx="4.5" cy="12" r="1.2" fill="currentColor" stroke="none"/>'),
+  pasaporte: svg('<rect x="5" y="3" width="14" height="18" rx="1.6"/><circle cx="12" cy="10.5" r="3.2"/><path d="M8.8 10.5h6.4M12 7.3c1 .9 1.4 2 1.4 3.2s-.4 2.3-1.4 3.2c-1-.9-1.4-2-1.4-3.2s.4-2.3 1.4-3.2z"/><path d="M9 17h6"/>'),
+  perfil: svg('<ellipse cx="12" cy="12" rx="8" ry="9.5"/><circle cx="12" cy="10" r="3"/><path d="M6.8 18.2c1.2-2.3 3-3.4 5.2-3.4s4 1.1 5.2 3.4"/>'),
+  museo: svg('<path d="M3 9.5L12 4.5l9 5"/><path d="M4 20h16M5 17.5h14"/><path d="M7 10.5v7M10.3 10.5v7M13.7 10.5v7M17 10.5v7"/>'),
+  check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  mas: svg('<path d="M12 5v14M5 12h14"/>'),
+  cerrar: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+  derecha: svg('<path d="M4.5 12h15M13.5 6l6 6-6 6"/>'),
+  izquierda: svg('<path d="M19.5 12h-15M10.5 6l-6 6 6 6"/>'),
+  chevron: svg('<path d="M9 6l6 6-6 6"/>')
+};
+
+/* ===== OBRAS (fichas) ===== */
+const MUSEOS = {
+  prado:{nombre:"Museo del Prado", ciudad:"Madrid", pais:"España", corto:"Prado"},
+  moma:{nombre:"Museo de Arte Moderno (MoMA)", ciudad:"Nueva York", pais:"Estados Unidos", corto:"MoMA"},
+  ng:{nombre:"National Gallery", ciudad:"Londres", pais:"Reino Unido", corto:"National Gallery"},
+  mauritshuis:{nombre:"Mauritshuis", ciudad:"La Haya", pais:"Países Bajos", corto:"Mauritshuis"}
+};
+const WIKI = f => "https://commons.wikimedia.org/wiki/Special:Redirect/file/" + f + "?width=800";
+const OBRAS = {
+  meninas:{
+    titulo:"Las Meninas", autor:"Diego Velázquez", anio:1656, tecnica:"Óleo sobre lienzo", dims:"318 × 276 cm", mov:"Barroco", museo:"prado",
+    img:"img/meninas.jpg",
+    sobre:"Representa a la infanta Margarita rodeada de sus damas de compañía y otros miembros de la corte. Velázquez también aparece dentro de la pintura, frente a un gran lienzo.",
+    artista:"Diego Velázquez (1599-1660) fue uno de los principales pintores del Siglo de Oro español. Fue pintor de cámara del rey Felipe IV y destacó por su dominio de la luz, la perspectiva y el realismo.",
+    contexto:"Fue realizada durante el reinado de Felipe IV, en una España que atravesaba un período de decadencia política y económica, pero de gran desarrollo artístico y cultural.",
+    curioso:"En el espejo del fondo se reflejan los reyes Felipe IV y Mariana de Austria. Esto genera un juego de perspectivas que hace preguntarse al espectador qué está pintando realmente Velázquez."
+  },
+  noche:{
+    titulo:"La noche estrellada", autor:"Vincent van Gogh", anio:1889, tecnica:"Óleo sobre lienzo", dims:"73,7 × 92,1 cm", mov:"Postimpresionismo", museo:"moma",
+    img:"img/noche.jpg",
+    sobre:"Representa un paisaje nocturno inspirado en la vista desde la ventana de su habitación. El cielo domina la composición con estrellas brillantes, formas ondulantes y una luna creciente.",
+    artista:"Vincent van Gogh (1853-1890) fue un pintor neerlandés reconocido por sus colores intensos y pinceladas expresivas. Aunque hoy es uno de los artistas más influyentes del arte moderno, obtuvo poco reconocimiento durante su vida.",
+    contexto:"Pintó esta obra mientras estaba internado voluntariamente en el hospital psiquiátrico de Saint-Rémy, en Francia. Durante ese período continuó desarrollando su trabajo artístico.",
+    curioso:"La pintura no reproduce fielmente el paisaje. Van Gogh incorporó elementos imaginarios y recuerdos personales, transformando la escena en una expresión de su propia percepción del mundo."
+  },
+  girasoles:{
+    titulo:"Los girasoles", autor:"Vincent van Gogh", anio:1888, tecnica:"Óleo sobre lienzo", dims:"92,1 × 73 cm", mov:"Postimpresionismo", museo:"ng",
+    img:WIKI("Vincent_van_Gogh_-_Sunflowers_(1888,_National_Gallery_London).jpg"),
+    sobre:"Un jarrón con girasoles en distintas etapas de su vida: algunos en plena flor y otros ya marchitos. Casi toda la pintura está resuelta en distintos tonos de amarillo.",
+    artista:"Vincent van Gogh (1853-1890) fue un pintor neerlandés reconocido por sus colores intensos y pinceladas expresivas. Aunque hoy es uno de los artistas más influyentes del arte moderno, obtuvo poco reconocimiento durante su vida.",
+    contexto:"La pintó en Arlés, en el sur de Francia, para decorar la habitación que preparaba para recibir a su amigo, el pintor Paul Gauguin.",
+    curioso:"Van Gogh pintó varias versiones de esta composición. Hoy se conservan en museos de distintos países, como Londres, Ámsterdam y Tokio."
+  },
+  perla:{
+    titulo:"La joven de la perla", autor:"Johannes Vermeer", anio:1665, anioTxt:"c. 1665", tecnica:"Óleo sobre lienzo", dims:"44,5 × 39 cm", mov:"Barroco neerlandés", museo:"mauritshuis",
+    img:WIKI("1665_Girl_with_a_Pearl_Earring.jpg"),
+    sobre:"Una joven gira la cabeza y mira directamente al espectador. Lleva un turbante azul y amarillo y un gran pendiente que refleja la luz.",
+    artista:"Johannes Vermeer (1632-1675) fue un pintor neerlandés de Delft, conocido por su manejo de la luz y sus escenas tranquilas de interiores. Se le atribuyen apenas unas 35 obras.",
+    contexto:"Se pintó durante el Siglo de Oro neerlandés, una época de gran prosperidad comercial en que la pintura llegó a las casas de la burguesía.",
+    curioso:"No es el retrato de una persona concreta, sino un \"tronie\": un estudio de un rostro con vestimenta llamativa. Hasta hoy no se sabe quién fue la modelo."
+  }
+};
+const anioTxt = o => o.anioTxt || o.anio;
+
+// El pasaporte no parte vacío: tres obras escaneadas en visitas anteriores (incluida Las Meninas).
+// Cada visita es a UN museo y solo tiene obras de ese museo.
+const VISITAS_INICIALES = [
+  {id:"v3", museo:"prado",       fecha:"2026-11-15", obras:[{id:"meninas", hora:"12:06"}]},
+  {id:"v2", museo:"mauritshuis", fecha:"2026-10-28", obras:[{id:"perla", hora:"15:42"}]},
+  {id:"v1", museo:"ng",          fecha:"2026-10-12", obras:[{id:"girasoles", hora:"11:18"}]}
+];
+
+/* ===== ESTADO (se guarda en el navegador) ===== */
+const CLAVE = "artpass.noche.v1";
+let visitas, efectos;
+function cargar(){
+  try{
+    const d = JSON.parse(localStorage.getItem(CLAVE));
+    visitas = d && Array.isArray(d.visitas) ? d.visitas : clonar(VISITAS_INICIALES);
+    efectos = d ? d.efectos !== false : true;
+    visitas.forEach(v=>v.obras=v.obras.filter(o=>!BLOQUEADAS_AQUI.includes(o.id)));
+    visitas = visitas.filter(v=>v.obras.length);
+  }catch(e){ visitas = clonar(VISITAS_INICIALES); efectos = true; }
+}
+function persistir(){ try{ localStorage.setItem(CLAVE, JSON.stringify({visitas, efectos})); }catch(e){} }
+function clonar(x){ return JSON.parse(JSON.stringify(x)); }
+function reiniciar(){
+  try{ localStorage.removeItem(CLAVE); }catch(e){}
+  cargar(); ir("inicio"); toast("Demo reiniciada");
+}
+
+/* ===== FECHAS ===== */
+const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const MESES_L = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+function fechaCorta(f){ const [a,m,d]=f.split("-"); return +d+" "+MESES[+m-1]+" "+a; }
+function fechaLarga(f){ const [a,m,d]=f.split("-"); return +d+" de "+MESES_L[+m-1]+" "+a; }
+const p2 = n => String(n).padStart(2,"0");
+function hoy(){ const d=new Date(); return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function ahora(){ const d=new Date(); return p2(d.getHours())+":"+p2(d.getMinutes()); }
+const nObras = n => n+" "+(n===1?"obra":"obras");
+
+/* ===== COLECCIÓN ===== */
+function guardadas(){
+  const lista=[];
+  visitas.forEach(v=>v.obras.forEach(o=>lista.push({id:o.id, fecha:v.fecha, hora:o.hora, visita:v.id})));
+  return lista;  // de la más reciente a la más antigua
+}
+const estaGuardada = id => guardadas().some(g=>g.id===id);
+const registro = id => guardadas().find(g=>g.id===id);
+function guardar(id){
+  if(estaGuardada(id)) return;
+  const museo = OBRAS[id].museo, f = hoy();
+  let v = visitas.find(v=>v.museo===museo && v.fecha===f);
+  if(!v){ v={id:"v"+Date.now(), museo, fecha:f, obras:[]}; visitas.unshift(v); }
+  v.obras.unshift({id, hora:ahora()});
+  persistir();
+}
+function quitar(id){
+  visitas.forEach(v=>v.obras=v.obras.filter(o=>o.id!==id));
+  visitas=visitas.filter(v=>v.obras.length);
+  persistir();
+}
+
+function toast(txt){
+  const el=document.getElementById("toast"); el.textContent=txt; el.classList.add("show");
+  clearTimeout(el._h); el._h=setTimeout(()=>el.classList.remove("show"),2400);
+}
+
+/* ===== PIEZAS QUE SE REPITEN ===== */
+function topbar(conVolver){
+  return `<header class="topbar">
+    <span>${conVolver ? `<button class="back-btn" onclick="volver()" aria-label="Volver">${ICON.izquierda}</button>` : ""}</span>
+    <button class="brand" onclick="ir('inicio')" aria-label="ARTPASS, inicio"><img src="img/logo-claro.png" alt="ARTPASS"></button>
+    <span></span>
+  </header>`;
+}
+const imgTag = (src, alt, extra="") => `<img src="${src}" alt="${alt}" ${extra} onerror="this.style.visibility='hidden'">`;
+function filaObra(id, hora){
+  const o=OBRAS[id], m=MUSEOS[o.museo];
+  const info = hora ? `${o.autor} · sellada a las ${hora}` : `${o.autor} · ${anioTxt(o)} · ${m.corto}`;
+  return `<button class="row" onclick="ir('obra/${id}')">
+    <div class="thumb">${imgTag(o.img,"",'loading="lazy"')}</div>
+    <div><div class="name">${o.titulo}</div><div class="info">${info}</div></div>
+    <div class="arrow">${ICON.derecha}</div>
+  </button>`;
+}
+// Sello postal dorado (SVG) con la fecha
+function sello(f){
+  const id="c"+Math.random().toString(36).slice(2,7), [d,m,a]=f.split(" ");
+  return `<svg class="sello" viewBox="0 0 120 120" aria-hidden="true">
+    <defs><path id="${id}" d="M60,60 m-43,0 a43,43 0 1,1 86,0 a43,43 0 1,1 -86,0"/></defs>
+    <g fill="none" stroke="#8E6A33" stroke-width="2.4"><circle cx="60" cy="60" r="55"/><circle cx="60" cy="60" r="31" stroke-width="1.4"/></g>
+    <circle cx="60" cy="60" r="50" fill="none" stroke="#8E6A33" stroke-width="1"/>
+    <text font-family="DM Sans,sans-serif" font-size="10.5" font-weight="600" letter-spacing="2.2" fill="#8E6A33"><textPath href="#${id}">ARTPASS · COLECCIONADA ·</textPath></text>
+    <text x="60" y="58" text-anchor="middle" font-family="Playfair Display,serif" font-weight="600" font-size="15" fill="#8E6A33">${d} ${m}</text>
+    <text x="60" y="73" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" font-weight="600" letter-spacing="1.5" fill="#8E6A33">${a}</text>
+  </svg>`;
+}
+
+
+/* ===== PANTALLAS ===== */
+const PANTALLAS = {
+
+  // 01 · Galería con línea de tiempo
+  inicio(){
+    const lista = guardadas().map(g=>g.id).sort((a,b)=>OBRAS[a].anio-OBRAS[b].anio);
+    return `${topbar(false)}
+      <section class="heading">
+        <div class="eyebrow">Galería</div>
+        <h1 style="margin-top:8px">Tu galería</h1>
+        <p class="count" style="margin-top:8px">${nObras(lista.length)} coleccionadas</p>
+        <p><button class="link-arrow" onclick="ir('pasaporte')">Ver mi pasaporte ${ICON.derecha}</button></p>
+      </section>
+      <div class="gallery-wrap">
+        <button class="g-nav prev" id="gPrev" onclick="moverGaleria(-1)" aria-label="Obra anterior">${ICON.izquierda}</button>
+        <button class="g-nav next" id="gNext" onclick="moverGaleria(1)" aria-label="Obra siguiente">${ICON.derecha}</button>
+        <div class="gallery" id="gallery">
+          ${lista.map(id=>{const o=OBRAS[id];return `
+            <button class="painting" data-anio="${anioTxt(o)}" onclick="tocarCuadro(this,'${id}')">
+              <div class="art">${imgTag(o.img,o.titulo)}</div>
+              <div class="cap">${o.titulo}</div>
+              <div class="yr">${anioTxt(o)}</div>
+              <div class="mu">${MUSEOS[o.museo].corto}</div>
+            </button>`}).join("")}
+        </div>
+      </div>
+      <div class="timeline" style="${lista.length?"":"display:none"}">
+        <div class="line"></div><div class="mark" id="mark" style="left:0"></div>
+        <div class="ends"><span>Más antigua</span><span id="anioActual" style="color:var(--negro);font-weight:600"></span><span>Más reciente</span></div>
+      </div>
+      <div class="nfc-card">
+        <div class="nfc-icon">${ICON.escanear}</div>
+        <div>
+          <div class="eyebrow">En el museo</div>
+          <p>Busca el punto ARTPASS junto a la obra y acerca tu celular. Se abrirá su estampilla para agregarla a tu pasaporte.</p>
+        </div>
+      </div>`;
+  },
+
+  // 02 · Ficha de la obra
+  obra(id){
+    const o=OBRAS[id]; if(!o) return PANTALLAS.inicio();
+    const m=MUSEOS[o.museo], r=registro(id), recien = recienAgregada===id;
+    return `${topbar(true)}
+      ${recien ? `<div class="scan-banner">${ICON.check}
+        <div><b>Estampilla en tu pasaporte</b><br>Ya puedes guardar el celular y seguir tu visita.</div>
+        <button class="banner-btn" onclick="botonQuitar('${id}')">Deshacer</button></div>` : ""}
+      <div class="intro">
+        <div class="eyebrow">Ficha de la obra</div>
+        <h1>${o.titulo}</h1>
+        <div class="sub">${o.autor} · ${anioTxt(o)} · ${m.corto}</div>
+      </div>
+      <div class="scan-card">
+        <div class="scan-image">${imgTag(o.img, o.titulo+", "+o.autor)}</div>
+        ${r ? `<div class="saved-row"><span class="saved-chip">${ICON.check}En tu pasaporte · ${fechaCorta(r.fecha)}</span>
+                 <button class="text-btn" onclick="botonQuitar('${id}')">Quitar</button></div>`
+            : BLOQUEADAS_AQUI.includes(id)
+              ? `<p class="note">Aún no está en tu pasaporte. Acerca tu celular a su punto ARTPASS en el museo para sellarla.</p>`
+              : `<button class="primary" onclick="escanear('${id}')">${ICON.escanear} Escanear para agregar</button>`}
+        <p class="resumen">${o.sobre}</p>
+        <details class="more">
+          <summary>Ver más información ${ICON.chevron}</summary>
+          <div class="details">
+            <div><div class="label">Año</div><div class="value">${anioTxt(o)}</div></div>
+            <div><div class="label">Técnica</div><div class="value">${o.tecnica}</div></div>
+            <div><div class="label">Dimensiones</div><div class="value">${o.dims}</div></div>
+            <div><div class="label">Movimiento</div><div class="value">${o.mov}</div></div>
+            <div class="full"><div class="label">Ubicación</div><div class="value">${m.nombre}, ${m.ciudad}, ${m.pais}</div></div>
+          </div>
+          <div class="bloque"><h3>El artista</h3><p>${o.artista}</p></div>
+          <div class="bloque"><h3>Contexto histórico</h3><p>${o.contexto}</p></div>
+          <div class="curioso"><div class="label">Dato curioso</div><p>${o.curioso}</p></div>
+        </details>
+      </div>`;
+  },
+
+  // 03 · Pasaporte: estampillas + visitas recientes
+  pasaporte(){
+    const g=guardadas(), total=Object.keys(OBRAS).length, faltan=total-g.length;
+    const nueva = resaltar; resaltar=null;
+    return `${topbar(false)}
+      <div class="screen-head">
+        <div><div class="eyebrow">Pasaporte personal</div><h2>Mis estampillas</h2></div>
+        <div class="count">${nObras(g.length)}</div>
+      </div>
+      <div class="carousel" id="carousel">
+        ${g.map(x=>{const o=OBRAS[x.id];return `
+          <button class="c-wrap ${x.id===nueva?"nueva":""}" onclick="ir('obra/${x.id}')" aria-label="${o.titulo}">
+            ${x.id===nueva?`<span class="etq-nueva">Nueva</span>`:""}
+            <div class="sombra"><div class="estampilla">
+              <div class="marco">
+                <div class="art">${imgTag(o.img,o.titulo,'loading="lazy"')}</div>
+                <div class="name">${o.titulo}</div>
+                <div class="small">${o.autor} · ${anioTxt(o)}</div>
+                <div class="foot"><span>${MUSEOS[o.museo].corto}</span><span>${fechaCorta(x.fecha)}</span></div>
+              </div>
+              ${sello(fechaCorta(x.fecha))}
+            </div></div>
+          </button>`}).join("")}
+        ${faltan ? `<div class="bloqueada"><img src="img/marca-oscura.png" alt=""><b>${faltan===1?"1 obra por descubrir":faltan+" obras por descubrir"}</b><span>Acerca tu celular al punto ARTPASS<br>de una obra para sumar su estampilla.</span></div>` : ""}
+      </div>
+      <div class="dots" id="dots">${[...g, ...(faltan?[0]:[])].map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>
+      <div class="progreso"><b>${g.length}/${total}</b><div class="barra"><i style="width:${g.length/total*100}%"></i></div><span class="count">estampillas</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="eyebrow">Visitas recientes</div>
+        <button class="link-arrow" onclick="ir('museos')">Ver por museo ${ICON.derecha}</button>
+      </div>
+      <div class="list">${visitas.map(filaVisita).join("")}</div>`;
+  },
+
+  // 04 · Detalle de una visita
+  visita(id){
+    const v=visitas.find(v=>v.id===id); if(!v) return PANTALLAS.pasaporte();
+    const m=MUSEOS[v.museo]; const [a,mm,d]=v.fecha.split("-");
+    return `${topbar(true)}
+      <div class="visit-title">
+        <div><div class="eyebrow">Detalle de visita</div><h2>${m.nombre}</h2><div class="count" style="margin-top:6px">${m.ciudad}, ${m.pais}</div></div>
+        <div class="stamp">${+d} ${MESES[+mm-1].toUpperCase()}<br>${a}</div>
+      </div>
+      <div class="list" style="margin-top:22px;border-top:1px solid var(--arena)">
+        ${v.obras.map(o=>filaObra(o.id, o.hora)).join("")}
+      </div>
+      <p class="note">${v.obras.length===1 ? "Una estampilla sellada en esta visita. Puedes volver a ella cuando quieras." : v.obras.length+" estampillas selladas en esta visita. Puedes volver a ellas cuando quieras."}</p>`;
+  },
+
+  // 05 · Escanear: explica el gesto
+  escanear(){
+    return `${topbar(false)}
+      <div class="center">
+        <div class="eyebrow">Escanear</div>
+        <h2 style="margin-top:6px">Acerca tu celular a la obra</h2>
+        <p class="muted" style="margin-top:10px;font-size:14px;line-height:1.5">Como cuando pagas sin contacto: el punto ARTPASS está junto a la ficha de cada obra.</p>
+      </div>
+      <div class="pulse" style="margin-bottom:40px">${ICON.escanear}</div>
+      <div class="steps">
+        <div class="step"><b>1</b>Descubre una obra con el punto ARTPASS.</div>
+        <div class="step"><b>2</b>Acerca tu celular al punto: la app se abre sola.</div>
+        <div class="step"><b>3</b>Toca “Agregar a mi pasaporte” y se sella tu estampilla.</div>
+        <div class="step"><b>4</b>Vuelve a su ficha cuando quieras, después de la visita.</div>
+      </div>`;
+  },
+
+  // 06 · Museos visitados
+  museos(){
+    const ids=[...new Set(visitas.map(v=>v.museo))];
+    return `${topbar(true)}
+      <div class="screen-head">
+        <div><div class="eyebrow">Museos</div><h2>Dónde has estado</h2></div>
+        <div class="count">${ids.length} ${ids.length===1?"museo":"museos"}</div>
+      </div>
+      <div class="list" style="border-top:1px solid var(--arena)">
+        ${ids.map(mid=>{const m=MUSEOS[mid], vs=visitas.filter(v=>v.museo===mid);
+          const n=vs.reduce((s,v)=>s+v.obras.length,0);
+          return `<button class="row" style="grid-template-columns:1fr auto" onclick="ir('visita/${vs[0].id}')">
+            <div><div class="name">${m.nombre}</div><div class="info">${m.ciudad} · ${nObras(n)} · última visita ${fechaLarga(vs[0].fecha)}</div></div>
+            <div class="arrow">${ICON.derecha}</div></button>`}).join("")}
+      </div>`;
+  },
+
+  // 07 · Perfil y ajustes
+  perfil(){
+    const g=guardadas(), museos=new Set(visitas.map(v=>v.museo)).size, ciudades=new Set(visitas.map(v=>MUSEOS[v.museo].ciudad)).size;
+    return `${topbar(false)}
+      <div class="eyebrow" style="margin-bottom:12px">Perfil</div>
+      <div class="pasaporte-id">
+        <img src="img/logo.png" alt="ARTPASS">
+        <h2>Hola, visitante</h2>
+        <div class="datos"><div>Pasaporte Nº<b>AP-0427</b></div><div>Ciudades<b>${ciudades}</b></div></div>
+      </div>
+      <div class="stats">
+        <div><b>${g.length}</b><span>Estampillas</span></div>
+        <div><b>${visitas.length}</b><span>Visitas</span></div>
+        <div><b>${museos}</b><span>Museos</span></div>
+      </div>
+      <div style="margin-top:26px" class="eyebrow">Configuración</div>
+      <div class="setting">
+        <div>Sonido y vibración al sellar<div class="count" style="margin-top:3px">Una confirmación al agregar cada estampilla</div></div>
+        <button class="switch ${efectos?"on":""}" onclick="cambiarEfectos(this)" aria-label="Sonido y vibración"></button>
+      </div>
+      <div class="setting"><div>Privacidad<div class="count" style="margin-top:3px">Tu pasaporte solo se guarda en este celular</div></div></div>
+      <button class="secondary" style="margin-top:30px" onclick="reiniciar()">Reiniciar demo (para el siguiente visitante)</button>`;
+  }
+};
+
+function filaVisita(v){
+  const m=MUSEOS[v.museo];
+  return `<button class="row" style="grid-template-columns:1fr auto" onclick="ir('visita/${v.id}')">
+    <div><div class="name">${m.nombre}</div><div class="info">${fechaLarga(v.fecha)} · ${nObras(v.obras.length)}</div></div>
+    <div class="arrow">${ICON.derecha}</div></button>`;
+}
+
+/* ===== ACCIONES ===== */
+let recienAgregada = null, resaltar = null;
+function botonQuitar(id){
+  quitar(id); if(recienAgregada===id) recienAgregada=null;
+  render(); toast("Quitada de tu pasaporte");
+}
+function tocarCuadro(el, id){
+  if(el.classList.contains("is-center")) return ir("obra/"+id);
+  centrarEn(el.parentElement, el);
+}
+function cambiarEfectos(btn){
+  efectos=!efectos; btn.classList.toggle("on",efectos); persistir();
+  toast(efectos?"Sonido y vibración activados":"Sonido y vibración desactivados");
+}
+
+
+/* ===== ESCANEO NFC ===== */
+function escanear(id){
+  const o=OBRAS[id]; if(!o || BLOQUEADAS_AQUI.includes(id)) return;
+  const ya=estaGuardada(id), el=document.getElementById("escaneo");
+  let chispas=""; for(let i=0;i<34;i++){ const a=i/34*Math.PI*2+(i%3)*.2, d=120+(i*53%140); chispas+=`<i style="--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;${i%4?"":"width:4px;height:4px"}"></i>`; }
+  const fSello = ya ? fechaCorta(registro(id).fecha) : fechaCorta(hoy());
+  el.innerHTML = `
+    <div class="esc-logo"><img src="img/logo.png" alt="ARTPASS"></div>
+    <button class="esc-cerrar" onclick="cerrarEscaneo('${id}','inicio')" aria-label="Cerrar">${ICON.cerrar}</button>
+    <div class="rayos"></div>
+    <div class="ondas"><i></i><i></i><i></i><b>${ICON.escanear}</b></div>
+    <div class="detectada"><div class="eyebrow">Leyendo NFC</div><p>Un momento…</p></div>
+    <div class="escena">
+      <div class="sombraEsc"><div class="estampilla">
+        <div class="marco">
+          <div class="art">${imgTag(o.img, o.titulo+", "+o.autor)}</div>
+          <div class="texto"><div class="name">${o.titulo}</div><div class="small">${o.autor} · ${anioTxt(o)}</div></div>
+        </div>
+      </div></div>
+      <svg class="trazo" preserveAspectRatio="none"><rect x="1" y="1" rx="3"/></svg>
+      ${sello(fSello)}
+    </div>
+    <div class="chispas">${chispas}</div>
+    <div class="destello"></div>
+    <div class="textos">
+      <div class="texto1">
+        <div class="eyebrow">${ya ? "Ya la coleccionaste" : "Obra encontrada"}</div>
+        <h2>${o.titulo}</h2>
+        <p>${MUSEOS[o.museo].nombre.replace(/ \(.*\)/,"")} · ${MUSEOS[o.museo].ciudad}</p>
+      </div>
+      <div class="texto2">
+        <div class="eyebrow">Estampilla desbloqueada</div>
+        <h2>¡Ya es parte de tu pasaporte!</h2>
+        <p>Ahora tienes <span id="nEst"></span> estampillas</p>
+      </div>
+    </div>
+    <div class="acciones">
+      <div class="acciones1">
+        ${ya
+          ? `<button class="btn-oro" onclick="cerrarEscaneo('${id}','obra')">Ver la ficha de la obra</button>
+             <button class="btn-linea" onclick="cerrarEscaneo('${id}','pasaporte')">Ir a mi pasaporte</button>`
+          : `<button class="btn-oro agregar" onclick="agregarAlPasaporte('${id}')">${ICON.mas} Agregar a mi pasaporte</button>
+             <p class="nota">Toca para sellar la estampilla</p>`}
+      </div>
+      <div class="acciones2">
+        <button class="btn-oro" onclick="cerrarEscaneo('${id}','obra')">Conocer la obra</button>
+        <button class="btn-linea" onclick="cerrarEscaneo('${id}','pasaporte')">Ver mi pasaporte</button>
+      </div>
+    </div>`;
+  el.hidden=false; el.className="escaneo";
+  requestAnimationFrame(()=>{
+    const s=el.querySelector(".trazo"), rect=s.querySelector("rect"), b=s.getBoundingClientRect();
+    rect.setAttribute("width", b.width-2); rect.setAttribute("height", b.height-2);
+    s.style.setProperty("--p", 2*(b.width+b.height));
+    void el.offsetWidth; el.classList.add("fase1");
+  });
+}
+function agregarAlPasaporte(id){
+  guardar(id); recienAgregada=id;
+  document.getElementById("nEst").textContent = guardadas().length;
+  document.getElementById("escaneo").classList.add("fase2");
+  if(efectos){ sonidoSello(); setTimeout(()=>{ try{ navigator.vibrate && navigator.vibrate([20,40,70]); }catch(e){} }, 330); }
+}
+// Golpe del sello + "ding" de confirmación (sintetizado; suena porque el usuario tocó el botón)
+function sonidoSello(){
+  try{
+    const C=new (window.AudioContext||window.webkitAudioContext)(), t0=C.currentTime+0.33;
+    const g1=C.createOscillator(), gg=C.createGain();
+    g1.type="sine"; g1.frequency.setValueAtTime(140,t0); g1.frequency.exponentialRampToValueAtTime(45,t0+.25);
+    gg.gain.setValueAtTime(.55,t0); gg.gain.exponentialRampToValueAtTime(.001,t0+.3);
+    g1.connect(gg).connect(C.destination); g1.start(t0); g1.stop(t0+.32);
+    [[1318.5,.08],[1975.5,.2],[2637,.32]].forEach(([f,d])=>{
+      const o=C.createOscillator(), g=C.createGain(); o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(0,t0+d); g.gain.linearRampToValueAtTime(.16,t0+d+.005); g.gain.exponentialRampToValueAtTime(.001,t0+d+.9);
+      o.connect(g).connect(C.destination); o.start(t0+d); o.stop(t0+d+1);
+    });
+  }catch(e){}
+}
+function cerrarEscaneo(id, destino){
+  const el=document.getElementById("escaneo"); el.hidden=true; el.innerHTML=""; el.className="escaneo";
+  if(destino==="pasaporte"){ if(estaGuardada(id)) resaltar=id; ir("pasaporte"); }
+  else if(destino==="obra") ir("obra/"+id);
+  else ir("inicio");
+}
+
+/* ===== NAVEGACIÓN ===== */
+const TABS = [["inicio","Galería","galeria"],["museos","Museos","museo"],["escanear","Escanear","escanear"],["pasaporte","Pasaporte","pasaporte"],["perfil","Perfil","perfil"]];
+const PADRE = {obra:"pasaporte", visita:"pasaporte", museos:"inicio", pasaporte:"inicio", perfil:"inicio", escanear:"inicio"};
+let paginaActual="inicio", pasos=0, tabAnterior=null;
+function ir(ruta){ if(location.hash==="#"+ruta) render(); else { pasos++; location.hash=ruta; } }
+function volver(){
+  if(pasos>0){ pasos--; history.back(); return; }
+  const p=(location.hash.slice(1)||"inicio").split("/")[0];
+  location.replace("#"+(PADRE[p]||"inicio"));
+}
+function render(){
+  const [p,arg]=(location.hash.slice(1)||"inicio").split("/");
+  if(p!=="obra") recienAgregada=null;
+  const html = PANTALLAS[p] ? PANTALLAS[p](arg) : PANTALLAS.inicio();
+  document.getElementById("app").innerHTML=`<section class="screen">${html}</section>`;
+  paginaActual = {visita:"pasaporte", obra:"pasaporte"}[p] || (PANTALLAS[p]?p:"inicio");
+  pintarTabs();
+  window.scrollTo(0,0);
+  activarGaleria(); activarCarrusel();
+}
+function pintarTabs(){
+  const n=guardadas().length, i=TABS.findIndex(x=>x[0]===paginaActual);
+  document.getElementById("tabs").innerHTML=TABS.map(([r,txt,ic])=>
+    `<button class="tab ${r==="escanear"?"scan":""} ${r===paginaActual?"current":""} ${r===paginaActual&&r!==tabAnterior?"pop":""}" onclick="ir('${r}')" ${r===paginaActual?'aria-current="page"':""}>
+      <span class="ic">${ICON[ic]}</span>${txt}${r==="pasaporte"&&n?`<span class="badge">${n}</span>`:""}</button>`).join("");
+  const ind=document.getElementById("tabInd");
+  if(i>=0) ind.style.left=(i*20+10)+"%";
+  ind.style.opacity=(i<0||paginaActual==="escanear")?0:1;
+  tabAnterior=paginaActual;
+}
+
+/* Galería: el cuadro del centro crece y la línea de tiempo sigue el scroll */
+function activarGaleria(){
+  const gal=document.getElementById("gallery"); if(!gal) return;
+  const items=[...gal.children], mark=document.getElementById("mark"), lbl=document.getElementById("anioActual");
+  if(!items.length) return;
+  function actualizar(){
+    const c=gal.scrollLeft+gal.clientWidth/2; let best=0, dist=1e9;
+    items.forEach((it,i)=>{const d=Math.abs(it.offsetLeft+it.offsetWidth/2-c); if(d<dist){dist=d;best=i;}});
+    items.forEach((it,i)=>it.classList.toggle("is-center",i===best));
+    gal._actual=best;
+    document.getElementById("gPrev").disabled = best===0;
+    document.getElementById("gNext").disabled = best===items.length-1;
+    lbl.textContent=items[best].dataset.anio;
+    mark.style.left=(items.length<2?50:best/(items.length-1)*100)+"%";
+  }
+  gal.addEventListener("scroll",()=>requestAnimationFrame(actualizar),{passive:true});
+  const mid=items[Math.floor(items.length/2)];
+  gal.scrollLeft=mid.offsetLeft+mid.offsetWidth/2-gal.clientWidth/2;
+  actualizar();
+  arrastrable(gal,"center");
+}
+function centrarEn(gal, el){ gal.scrollTo({left:el.offsetLeft+el.offsetWidth/2-gal.clientWidth/2, behavior:"smooth"}); }
+function moverGaleria(dir){
+  const gal=document.getElementById("gallery"), items=[...gal.children];
+  const i=Math.max(0, Math.min(items.length-1, (gal._actual||0)+dir));
+  centrarEn(gal, items[i]);
+}
+/* Arrastrar con el mouse (en el celular ya se desliza con el dedo) */
+function arrastrable(el, modo){
+  let x0=0, s0=0, abajo=false;
+  el.addEventListener("pointerdown", e=>{
+    if(e.pointerType!=="mouse" || e.button!==0) return;
+    abajo=true; el._movido=false; x0=e.clientX; s0=el.scrollLeft;
+    el.style.scrollSnapType="none"; el.classList.add("dragging");
+  });
+  el.addEventListener("pointermove", e=>{
+    if(!abajo) return;
+    const dx=e.clientX-x0;
+    if(Math.abs(dx)>5 && !el._movido){ el._movido=true; el.setPointerCapture(e.pointerId); }
+    if(el._movido) el.scrollLeft=s0-dx;
+  });
+  const soltar=()=>{
+    if(!abajo) return;
+    abajo=false; el.classList.remove("dragging");
+    const kids=[...el.children], ref = modo==="center" ? el.scrollLeft+el.clientWidth/2 : el.scrollLeft+22;
+    let best=kids[0], dist=1e9;
+    kids.forEach(k=>{ const pos = modo==="center" ? k.offsetLeft+k.offsetWidth/2 : k.offsetLeft; const d=Math.abs(pos-ref); if(d<dist){dist=d;best=k;} });
+    if(best) el.scrollTo({left: modo==="center" ? best.offsetLeft+best.offsetWidth/2-el.clientWidth/2 : best.offsetLeft-22, behavior:"smooth"});
+    setTimeout(()=>el.style.scrollSnapType="", 450);
+  };
+  el.addEventListener("pointerup", soltar);
+  el.addEventListener("pointercancel", soltar);
+  el.addEventListener("click", e=>{ if(el._movido){ e.stopPropagation(); e.preventDefault(); el._movido=false; } }, true);
+}
+function activarCarrusel(){
+  const car=document.getElementById("carousel"); if(!car) return;
+  const dots=[...document.getElementById("dots").children];
+  car.addEventListener("scroll",()=>{
+    const cards=[...car.children]; let best=0, dist=1e9;
+    cards.forEach((c,i)=>{const d=Math.abs(c.offsetLeft-22-car.scrollLeft); if(d<dist){dist=d;best=i;}});
+    dots.forEach((d,i)=>d.classList.toggle("on",i===best));
+  },{passive:true});
+  arrastrable(car,"start");
+}
+
+/* ===== INICIO =====
+   Sin "#" en la dirección = se abrió desde el NFC → escaneo de la obra de esta página.
+   Con "#..." = navegación normal dentro de la app. */
+window.addEventListener("hashchange",render);
+cargar();
+if(!location.hash){ history.replaceState(null,"","#pasaporte"); render(); escanear(OBRA_DE_ESTA_PAGINA); }
+else render();
+</script>
+</body>
+</html>
