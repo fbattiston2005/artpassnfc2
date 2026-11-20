@@ -882,12 +882,19 @@ function activarCarrusel(){
 }
 
 /* ===== INICIO =====
-   Sin "#" en la dirección = se abrió desde el NFC → escaneo de la obra de esta página.
-   Con "#..." = navegación normal dentro de la app. */
+   Cada vez que la página se abre (tocar el NFC), se recarga o el navegador
+   la recupera de memoria, arranca el escaneo de la obra de esta página.
+   Moverse entre pantallas dentro de la app no lo vuelve a mostrar. */
 window.addEventListener("hashchange",render);
-cargar();
-if(!location.hash){ history.replaceState(null,"","#pasaporte"); render(); escanear(OBRA_DE_ESTA_PAGINA); }
-else render();
+function abrirDesdeNFC(){
+  cargar();
+  if(location.hash!=="#pasaporte") history.replaceState(null,"","#pasaporte");
+  render();
+  escanear(OBRA_DE_ESTA_PAGINA);
+}
+abrirDesdeNFC();
+// Safari/Chrome a veces reabren la página desde memoria sin recargarla
+window.addEventListener("pageshow", e=>{ if(e.persisted) abrirDesdeNFC(); });
 </script>
 </body>
 </html>
